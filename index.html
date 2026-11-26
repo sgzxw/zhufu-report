@@ -496,7 +496,8 @@
     if(overlay) return;
     overlay=document.createElement('div');
     overlay.id='rpOverlay';
-    overlay.style.cssText='display:none;position:fixed;inset:0;z-index:9999;background:#F0F4F8;';
+    /* 不用 inset（旧版手机浏览器不支持），显式四边定位 */
+    overlay.style.cssText='display:none;position:fixed;top:0;left:0;right:0;bottom:0;z-index:9999;background:#F0F4F8;-webkit-overflow-scrolling:touch;';
     frame=document.createElement('iframe');
     frame.style.cssText='width:100%;height:100%;border:0;display:block;';
     frame.setAttribute('title','报表');
@@ -517,8 +518,9 @@
     if(EMBED[name]){
       ensure();
       if(cur!==name){
-        var blob=new Blob([EMBED[name]],{type:'text/html;charset=utf-8'});
-        frame.src=URL.createObjectURL(blob);
+        /* srcdoc：手机浏览器（微信X5/iOS Safari）兼容性远好于 blob: URL */
+        frame.removeAttribute('src');
+        frame.srcdoc=EMBED[name];
         cur=name;
       }
       overlay.style.display='block';
